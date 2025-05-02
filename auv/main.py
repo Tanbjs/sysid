@@ -84,77 +84,81 @@ train_dataset = tfds2tensor(train_dataset)      # convert to tensor
 
 # Training settings
 train_settings = {
-    'max_epoch': 1000,
+    'max_epoch': 10000,
     'tol': 1e-3,
     'alpha': [1, 1, 0.3, 1e-9, 1e-9, 1e-9],
-    'optimizer': tf.keras.optimizers.Adam(learning_rate=1e-3),
+    'optimizer': tf.keras.optimizers.Adam(learning_rate=1e-4),
 }
 
 # !!! comment out the line below if you don't want to train the model
-# load_and_train_model(model=model, 
-#                      train_dataset=train_dataset, 
-#                      checkpoint_path='auv/checkpoints/', 
-#                      load_chekpoint_path='auv/checkpoints/epoch_800.weights.h5', 
-#                      **train_settings)
+load_and_train_model(model=model, 
+                     train_dataset=train_dataset, 
+                     checkpoint_path='auv/checkpoints/', 
+                     load_chekpoint_path='auv/checkpoints/epoch_1000.weights.h5', 
+                     **train_settings)
 
-## ============================================ Testing section ==========================================
-# Load the trained model weights
-weight_path = 'auv/checkpoints/epoch_800.weights.h5'
-model, epoch = load_model(model, path=weight_path)
-model.summary()
+# ## ============================================ Testing section ==========================================
+# # find last weight path 
 
-# Test the model using the train dataset
-xk_true = train_dataset[:-1,:n_state]                             # x[k]
-uk_true = train_dataset[:-1,n_state:]                             # u[k]
-xkp1_true_train = train_dataset[1:,:n_state]                      # x[k+1]
-xkp1_pred_train = model((xk_true, uk_true), training=False)       # x[k+1] = model(x[k], u[k])
 
-# Test the model using the test dataset
-test_dataset = tfds2numpy(test_dataset)
-xk_true = test_dataset[:-1,:n_state]                            # x[k] 
-uk_true = test_dataset[:-1,n_state:]                            # u[k]
-xkp1_true_test = test_dataset[1:,:n_state]                      # x[k+1]
-xkp1_pred_test = model((xk_true, uk_true), training=False)      # x[k+1] = model(x[k], u[k])
+# # Load the trained model weights
 
-## ============================================ Plotting section ==========================================
-# Training 3D plot
-fig = plt.figure()
-ax = fig.add_subplot(111, projection='3d')
-ax.plot(xkp1_true_train[:,0], xkp1_true_train[:,1], xkp1_true_train[:,2], label='3D trajectory (x_true, y_true, z_true)', linestyle='--')
-ax.plot(xkp1_pred_train[:,0], xkp1_pred_train[:,1], xkp1_pred_train[:,2], label='3D trajectory (x_true, y_true, z_true)')
-ax.set_xlabel('x')
-ax.set_ylabel('y')
-ax.set_zlabel('z')
-ax.legend()
-plt.show()
+# weight_path = 'auv/checkpoints/epoch_800.weights.h5'
+# model, epoch = load_model(model, path=weight_path)
+# model.summary()
 
-# Testing 3D plot
-fig = plt.figure()
-ax = fig.add_subplot(111, projection='3d')
-ax.plot(xkp1_true_test[:,0], xkp1_true_test[:,1], xkp1_true_test[:,2], label='3D trajectory (x_true, y_true, z_true)', linestyle='--')
-ax.plot(xkp1_pred_test[:,0], xkp1_pred_test[:,1], xkp1_pred_test[:,2], label='3D trajectory (x_pred, y_pred, z_pred)')
-ax.set_xlabel('x')
-ax.set_ylabel('y')
-ax.set_zlabel('z')
-ax.legend()
-plt.show()
+# # Test the model using the train dataset
+# xk_true = train_dataset[:-1,:n_state]                             # x[k]
+# uk_true = train_dataset[:-1,n_state:]                             # u[k]
+# xkp1_true_train = train_dataset[1:,:n_state]                      # x[k+1]
+# xkp1_pred_train = model((xk_true, uk_true), training=False)       # x[k+1] = model(x[k], u[k])
 
-# Plotting all states
-n_state = xk_true.shape[1]
-time = time[time.shape[0]-xk_true.shape[0]:]  # Adjust time to match the length of xk_true
+# # Test the model using the test dataset
+# test_dataset = tfds2numpy(test_dataset)
+# xk_true = test_dataset[:-1,:n_state]                            # x[k] 
+# uk_true = test_dataset[:-1,n_state:]                            # u[k]
+# xkp1_true_test = test_dataset[1:,:n_state]                      # x[k+1]
+# xkp1_pred_test = model((xk_true, uk_true), training=False)      # x[k+1] = model(x[k], u[k])
 
-# Calculate number of rows and columns
-n_cols = 2
-n_rows = math.ceil(n_state / n_cols)
+# ## ============================================ Plotting section ==========================================
+# # Training 3D plot
+# fig = plt.figure()
+# ax = fig.add_subplot(111, projection='3d')
+# ax.plot(xkp1_true_train[:,0], xkp1_true_train[:,1], xkp1_true_train[:,2], label='3D trajectory (x_true, y_true, z_true)', linestyle='--')
+# ax.plot(xkp1_pred_train[:,0], xkp1_pred_train[:,1], xkp1_pred_train[:,2], label='3D trajectory (x_true, y_true, z_true)')
+# ax.set_xlabel('x')
+# ax.set_ylabel('y')
+# ax.set_zlabel('z')
+# ax.legend()
+# plt.show()
 
-plt.figure(figsize=(12, 3 * n_rows))
-for i in range(n_state):
-    plt.subplot(n_rows, n_cols, i + 1)
-    plt.plot(time, xkp1_true_test[:, i], label=f'x{i+1}_True', linewidth=2)
-    plt.plot(time, xkp1_pred_test[:, i], label=f'x{i+1}_Predict', linestyle='--')
-    plt.xlabel("Time step")
-    plt.ylabel(f"State {i}")
-    plt.legend()
-    plt.grid(True)
-plt.tight_layout()
-plt.show()
+# # Testing 3D plot
+# fig = plt.figure()
+# ax = fig.add_subplot(111, projection='3d')
+# ax.plot(xkp1_true_test[:,0], xkp1_true_test[:,1], xkp1_true_test[:,2], label='3D trajectory (x_true, y_true, z_true)', linestyle='--')
+# ax.plot(xkp1_pred_test[:,0], xkp1_pred_test[:,1], xkp1_pred_test[:,2], label='3D trajectory (x_pred, y_pred, z_pred)')
+# ax.set_xlabel('x')
+# ax.set_ylabel('y')
+# ax.set_zlabel('z')
+# ax.legend()
+# plt.show()
+
+# # Plotting all states
+# n_state = xk_true.shape[1]
+# time = time[time.shape[0]-xk_true.shape[0]:]  # Adjust time to match the length of xk_true
+
+# # Calculate number of rows and columns
+# n_cols = 2
+# n_rows = math.ceil(n_state / n_cols)
+
+# plt.figure(figsize=(12, 3 * n_rows))
+# for i in range(n_state):
+#     plt.subplot(n_rows, n_cols, i + 1)
+#     plt.plot(time, xkp1_true_test[:, i], label=f'x{i+1}_True', linewidth=2)
+#     plt.plot(time, xkp1_pred_test[:, i], label=f'x{i+1}_Predict', linestyle='--')
+#     plt.xlabel("Time step")
+#     plt.ylabel(f"State {i}")
+#     plt.legend()
+#     plt.grid(True)
+# plt.tight_layout()
+# plt.show()
