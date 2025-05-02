@@ -1,8 +1,8 @@
 import os
 import tensorflow as tf
 
-from koopman.models.deepkoopman import KoopmanAutoencoder
-from koopman.utils.loss import compute_loss
+from mypkg.koopman.models.deepkoopman import KoopmanAutoencoder
+from mypkg.utils.loss import compute_loss
 
 def batch_train(model: KoopmanAutoencoder, dataset: list, alpha, optimizer, device):
 

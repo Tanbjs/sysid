@@ -1,4 +1,4 @@
-from koopman.models.deepkoopman import KoopmanAutoencoder
+from mypkg.koopman.models.deepkoopman import KoopmanAutoencoder
 
 def load_model(model: KoopmanAutoencoder, path: str):
     """
@@ -12,10 +12,10 @@ def load_model(model: KoopmanAutoencoder, path: str):
     """
     # Load the pretrained model weights
     model.load_weights(path)
-    load_model_status = True
-    print("✅ Model weights loaded successfully.")
     epoch = int(path.split('_')[1].split('.')[0])  # Extract epoch from the filename
+
+    print("✅ Model weights loaded successfully.")
     print(f"✅ Model loaded at epoch {epoch}.")
     print("=====================================================")
 
-    return model, epoch, load_model_status
+    return model, epoch
