@@ -2,20 +2,10 @@
 
 This project is dedicated to the research and development of the DeepKoopman operator. The DeepKoopman operator is a mathematical framework for analyzing dynamical systems using data-driven approaches.
 
-## Project Structure
-- `.github/copilot-instructions.md`: Custom instructions for Copilot.
-- Additional files and folders will be added as the project progresses.
+# Build docker 
 
-## Requirements
-- Python (latest version)
-- Recommended VS Code Extensions:
-  - Python Extension
-  - Python Environments Extension
+sudo docker build -t tf-gpu .
 
-## Getting Started
-1. Clone the repository.
-2. Set up a Python virtual environment.
-3. Install necessary dependencies.
+# Run docker and mount host to container
 
-## Contributions
-Contributions are welcome. Please follow the guidelines in `CONTRIBUTING.md` (to be added).# sysid
+sudo docker run --rm --runtime=nvidia --gpus all -v .:/home/thesis_ws/sysid:rw,rshared -it tf-gpu bash

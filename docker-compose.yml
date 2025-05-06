@@ -1,0 +1,13 @@
+version: "3.8"
+
+services:
+  dev:
+    image: tf-gpu             
+    container_name: code-dev
+    tty: true                      
+    stdin_open: true          
+    volumes:
+      - ./:/home/thesis_ws/sysid:rw     
+    working_dir: /home/thesis_ws/sysid
+    command: bash                
+    
